@@ -1,0 +1,71 @@
+# ═══════════════════════════════════════════════════════════════
+#  GitHub Actions CI/CD Pipeline — TaskFlow
+#  Triggers on push to main → deploys to BOTH EC2 instances
+# ═══════════════════════════════════════════════════════════════
+
+name: 🚀 Build & Deploy to AWS EC2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy to EC2 Instances
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout Code ──────────────────────────────────────
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Validate Node.js (optional lint/test step) ─────────
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: task-manager/package.json
+
+      - name: 📦 Install dependencies (validate)
+        run: npm install
+        working-directory: ./task-manager
+
+      # ── 3. Deploy to EC2 Instance 1 ───────────────────────────
+      - name: 🖥️ Deploy to EC2 Instance 1
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST_1 }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "=== EC2 Instance 1 — Deploying ==="
+            cd /home/ubuntu/task-manager
+            git pull origin main
+            npm install --production
+            pm2 restart task-manager || pm2 start ecosystem.config.js
+            pm2 save
+            echo "=== Done ==="
+
+      # ── 4. Deploy to EC2 Instance 2 ───────────────────────────
+      - name: 🖥️ Deploy to EC2 Instance 2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST_2 }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "=== EC2 Instance 2 — Deploying ==="
+            cd /home/ubuntu/task-manager
+            git pull origin main
+            npm install --production
+            pm2 restart task-manager || pm2 start ecosystem.config.js
+            pm2 save
+            echo "=== Done ==="
+
+      # ── 5. Verify deployment ──────────────────────────────────
+      - name: ✅ Health Check
+        run: |
+          sleep 5
+          curl -f https://yourname.signiance.com/health || exit 1
+          echo "Deployment successful! App is live."
