@@ -20,6 +20,23 @@ const filterBtns     = document.querySelectorAll(".filter-btn");
 const clearDoneBtn   = document.getElementById("clear-done-btn");
 const easterEgg      = document.getElementById("easter-egg");
 const closeEasterBtn = document.getElementById("close-easter-egg");
+const themeToggleBtn = document.getElementById("theme-toggle");
+const themeIcon      = document.getElementById("theme-icon");
+const themeLabel     = document.getElementById("theme-label");
+
+// ─── Theme Toggle ─────────────────────────────────────────────────────────────
+function applyTheme(dark) {
+  document.body.classList.toggle("dark", dark);
+  themeIcon.textContent  = dark ? "☀️" : "🌙";
+  themeLabel.textContent = dark ? "Light" : "Dark";
+  localStorage.setItem("taskflow-theme", dark ? "dark" : "light");
+}
+
+// Load saved preference (default: light)
+applyTheme(localStorage.getItem("taskflow-theme") === "dark");
+themeToggleBtn.addEventListener("click", () => {
+  applyTheme(!document.body.classList.contains("dark"));
+});
 
 // ─── API Helpers ──────────────────────────────────────────────────────────────
 const API = "/tasks";

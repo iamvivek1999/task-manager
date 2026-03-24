@@ -1,12 +1,34 @@
 /* ═══════════════════════════════════════════════
    TaskFlow — styles.css
-   Premium dark-mode UI with glassmorphism cards
+   Light theme default · Dark mode via body.dark
    ═══════════════════════════════════════════════ */
 
-/* ── Reset & Tokens ─────────────────────────────── */
+/* ── Reset ───────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── Light Theme (default) ───────────────────────── */
 :root {
+  --bg:          #f4f6fb;
+  --bg2:         #eef0f7;
+  --bg3:         #e4e7f2;
+  --surface:     rgba(255,255,255,0.8);
+  --border:      rgba(0,0,0,0.09);
+  --accent:      #6c63ff;
+  --accent2:     #7c3aed;
+  --accent-glow: rgba(108,99,255,0.25);
+  --success:     #059669;
+  --danger:      #dc2626;
+  --warning:     #d97706;
+  --text:        #1e1e2e;
+  --text-muted:  #64748b;
+  --radius:      14px;
+  --shadow:      0 4px 20px rgba(0,0,0,0.1);
+  --font:        'Inter', sans-serif;
+  --header-bg:   rgba(244,246,251,0.85);
+}
+
+/* ── Dark Theme override ──────────────────────────── */
+body.dark {
   --bg:          #0d0f17;
   --bg2:         #141722;
   --bg3:         #1c2033;
@@ -20,9 +42,8 @@
   --warning:     #fbbf24;
   --text:        #e2e8f0;
   --text-muted:  #64748b;
-  --radius:      14px;
   --shadow:      0 8px 32px rgba(0,0,0,0.4);
-  --font:        'Inter', sans-serif;
+  --header-bg:   rgba(13,15,23,0.85);
 }
 
 html { scroll-behavior: smooth; }
@@ -32,6 +53,12 @@ body {
   color: var(--text);
   font-family: var(--font);
   min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(108,99,255,0.07), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(124,58,237,0.05), transparent);
+}
+body.dark {
   background-image:
     radial-gradient(ellipse 80% 50% at 50% -20%, rgba(108,99,255,0.15), transparent),
     radial-gradient(ellipse 60% 40% at 80% 80%, rgba(167,139,250,0.08), transparent);
@@ -42,9 +69,10 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(13,15,23,0.8);
+  background: var(--header-bg);
   backdrop-filter: blur(18px);
   border-bottom: 1px solid var(--border);
+  transition: background 0.3s, border-color 0.3s;
 }
 .header-inner {
   max-width: 780px;
@@ -98,7 +126,7 @@ body {
   font-size: 1.6rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  background: linear-gradient(90deg, #fff 0%, var(--accent2) 100%);
+  background: linear-gradient(90deg, var(--text) 0%, var(--accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -240,8 +268,8 @@ body {
 }
 .task-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.3);
-  border-color: rgba(255,255,255,0.13);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+  border-color: var(--accent);
 }
 .task-card.done { opacity: 0.55; }
 .task-card.done .task-title { text-decoration: line-through; color: var(--text-muted); }
@@ -419,6 +447,30 @@ kbd {
   color: var(--accent2);
 }
 
+/* ── Theme Toggle Button ─────────────────────────── */
+.theme-toggle {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg3);
+}
+.theme-toggle .toggle-icon { font-size: 1rem; }
+
 /* ── Utility ─────────────────────────────────────── */
 .hidden { display: none !important; }
 
@@ -428,4 +480,5 @@ kbd {
   .btn { width: 100%; justify-content: center; }
   .easter-egg-body { padding: 1.8rem 1.5rem; }
   .hello-title { font-size: 2rem; }
+  .theme-toggle span:not(.toggle-icon) { display: none; }
 }

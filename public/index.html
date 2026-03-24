@@ -21,11 +21,15 @@
     <header class="header">
       <div class="header-inner">
         <div class="logo">
-          <span class="logo-icon">⚡</span>
+          <span class="logo-icon"></span>
           <span class="logo-text">TaskFlow</span>
         </div>
         <div class="header-meta">
           <span id="task-count-badge" class="badge">0 tasks</span>
+          <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
+            <span class="toggle-icon" id="theme-icon">🌙</span>
+            <span id="theme-label">Dark</span>
+          </button>
           <span class="health-dot" id="health-dot" title="Server Health"></span>
         </div>
       </div>
@@ -91,23 +95,13 @@
         <canvas id="particle-canvas" class="particle-canvas"></canvas>
 
         <div class="easter-egg-body">
-          <div class="hello-badge">🥚 Easter Egg Unlocked!</div>
+          <div class="hello-badge"></div>
           <h2 class="hello-title">Hello, World!</h2>
           <p class="hello-subtitle">
             Built with <span class="highlight">Node.js</span> ·
             <span class="highlight">Express</span> ·
             <span class="highlight">AWS EC2</span>
           </p>
-          <div class="hello-code">
-            <pre><code>const express = require('express');
-const app = express();
-
-app.get('/', (req, res) =&gt; {
-  res.send('Hello, World! 🌍');
-});
-
-app.listen(3000);</code></pre>
-          </div>
           <p class="hello-hint">You found the secret! You typed <kbd>hello</kbd> 🎉</p>
           <button class="btn btn-primary" id="close-easter-egg">Back to TaskFlow</button>
         </div>
