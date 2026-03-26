@@ -25,11 +25,11 @@ jobs:
         with:
           node-version: "18"
           cache: "npm"
-          cache-dependency-path: task-manager/package.json
+          cache-dependency-path: package.json
 
       - name: 📦 Install dependencies (validate)
         run: npm install
-        working-directory: ./task-manager
+        working-directory: ./
 
       # ── 3. Deploy to EC2 Instance 1 ───────────────────────────
       - name: 🖥️ Deploy to EC2 Instance 1
@@ -43,7 +43,7 @@ jobs:
             cd /home/ubuntu/task-manager
             git pull origin main
             npm install --production
-            pm2 restart task-manager || pm2 start ecosystem.config.js
+            pm2 restart taskflow || pm2 start server.js --name taskflow
             pm2 save
             echo "=== Done ==="
 
@@ -59,7 +59,7 @@ jobs:
             cd /home/ubuntu/task-manager
             git pull origin main
             npm install --production
-            pm2 restart task-manager || pm2 start ecosystem.config.js
+            pm2 restart taskflow || pm2 start server.js --name taskflow
             pm2 save
             echo "=== Done ==="
 
