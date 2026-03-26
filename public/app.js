@@ -1,33 +1,34 @@
 /**
  * TaskFlow — app.js
- * Frontend logic: CRUD via fetch API + Easter Egg (type "hello")
+ * Frontend logic: CRUD via fetch API
+ * Easter eggs: type "task" → TaskFlow view | type "hello" → Hello World view
  */
 
 // ─── State ───────────────────────────────────────────────────────────────────
 let tasks = [];
 let currentFilter = "all";
-
+//changes
 // ─── DOM References ───────────────────────────────────────────────────────────
-const taskForm       = document.getElementById("task-form");
-const taskInput      = document.getElementById("task-input");
+const taskForm = document.getElementById("task-form");
+const taskInput = document.getElementById("task-input");
 const prioritySelect = document.getElementById("priority-select");
-const taskList       = document.getElementById("task-list");
-const emptyState     = document.getElementById("empty-state");
+const taskList = document.getElementById("task-list");
+const emptyState = document.getElementById("empty-state");
 const taskCountBadge = document.getElementById("task-count-badge");
-const healthDot      = document.getElementById("health-dot");
-const toastEl        = document.getElementById("toast");
-const filterBtns     = document.querySelectorAll(".filter-btn");
-const clearDoneBtn   = document.getElementById("clear-done-btn");
-const easterEgg      = document.getElementById("easter-egg");
-const closeEasterBtn = document.getElementById("close-easter-egg");
+const healthDot = document.getElementById("health-dot");
+const toastEl = document.getElementById("toast");
+const filterBtns = document.querySelectorAll(".filter-btn");
+const clearDoneBtn = document.getElementById("clear-done-btn");
+const helloView    = document.getElementById("hello-view");
+const taskflowView = document.getElementById("taskflow-view");
 const themeToggleBtn = document.getElementById("theme-toggle");
-const themeIcon      = document.getElementById("theme-icon");
-const themeLabel     = document.getElementById("theme-label");
+const themeIcon = document.getElementById("theme-icon");
+const themeLabel = document.getElementById("theme-label");
 
 // ─── Theme Toggle ─────────────────────────────────────────────────────────────
 function applyTheme(dark) {
   document.body.classList.toggle("dark", dark);
-  themeIcon.textContent  = dark ? "☀️" : "🌙";
+  themeIcon.textContent = dark ? "☀️" : "🌙";
   themeLabel.textContent = dark ? "Light" : "Dark";
   localStorage.setItem("taskflow-theme", dark ? "dark" : "light");
 }
@@ -41,10 +42,10 @@ themeToggleBtn.addEventListener("click", () => {
 // ─── API Helpers ──────────────────────────────────────────────────────────────
 const API = "/tasks";
 
-async function apiGet()             { return fetch(API).then(r => r.json()); }
-async function apiPost(data)        { return fetch(API, { method: "POST",   headers: {"Content-Type": "application/json"}, body: JSON.stringify(data) }).then(r => r.json()); }
-async function apiPut(id, data)     { return fetch(`${API}/${id}`, { method: "PUT",    headers: {"Content-Type": "application/json"}, body: JSON.stringify(data) }).then(r => r.json()); }
-async function apiDelete(id)        { return fetch(`${API}/${id}`, { method: "DELETE" }).then(r => r.json()); }
+async function apiGet() { return fetch(API).then(r => r.json()); }
+async function apiPost(data) { return fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }).then(r => r.json()); }
+async function apiPut(id, data) { return fetch(`${API}/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }).then(r => r.json()); }
+async function apiDelete(id) { return fetch(`${API}/${id}`, { method: "DELETE" }).then(r => r.json()); }
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
 let toastTimer;
@@ -69,7 +70,7 @@ function formatDate(iso) {
 function renderTasks() {
   const filtered = tasks.filter(t => {
     if (currentFilter === "pending") return !t.done;
-    if (currentFilter === "done")    return t.done;
+    if (currentFilter === "done") return t.done;
     return true;
   });
 
@@ -110,7 +111,7 @@ function renderTasks() {
   }
 
   // Update badge
-  const total   = tasks.length;
+  const total = tasks.length;
   const pending = tasks.filter(t => !t.done).length;
   taskCountBadge.textContent = `${pending} pending / ${total} total`;
 }
@@ -135,7 +136,7 @@ async function loadTasks() {
 
 async function addTask(e) {
   e.preventDefault();
-  const title    = taskInput.value.trim();
+  const title = taskInput.value.trim();
   const priority = prioritySelect.value;
   if (!title) return;
 
@@ -207,9 +208,10 @@ async function checkHealth() {
   }
 }
 
-// ─── 🥚 EASTER EGG — Typing "hello" triggers Hello World overlay ──────────────
-(function setupEasterEgg() {
-  const SECRET = "hello";
+// ─── 🥚 EASTER EGGS — "task" → TaskFlow | "hello" → Hello World ──────────────
+(function setupEasterEggs() {
+  const SECRETS = { task: "task", hello: "hello" };
+  const MAX_LEN = Math.max(...Object.values(SECRETS).map(s => s.length));
   let buffer = "";
   let bufferTimer;
 
@@ -222,41 +224,36 @@ async function checkHealth() {
     if (e.key.length !== 1) return;
 
     buffer += e.key.toLowerCase();
-
-    // Keep buffer trimmed to the length of the secret
-    if (buffer.length > SECRET.length) {
-      buffer = buffer.slice(buffer.length - SECRET.length);
-    }
+    if (buffer.length > MAX_LEN) buffer = buffer.slice(buffer.length - MAX_LEN);
 
     // Reset buffer after 2 seconds of inactivity
     clearTimeout(bufferTimer);
     bufferTimer = setTimeout(() => { buffer = ""; }, 2000);
 
-    // Check for match
-    if (buffer === SECRET) {
+    // Check for "task" → show TaskFlow
+    if (buffer.endsWith(SECRETS.task)) {
       buffer = "";
-      openEasterEgg();
+      showTaskFlow();
+    }
+    // Check for "hello" → show Hello World
+    else if (buffer.endsWith(SECRETS.hello)) {
+      buffer = "";
+      showHelloWorld();
     }
   });
 
-  function openEasterEgg() {
-    easterEgg.classList.remove("hidden");
-    startParticles();
-    closeEasterBtn.focus();
-  }
-
-  function closeEasterEgg() {
-    easterEgg.classList.add("hidden");
+  function showTaskFlow() {
+    helloView.classList.add("hidden");
+    taskflowView.classList.remove("hidden");
     stopParticles();
+    loadTasks();
   }
 
-  closeEasterBtn.addEventListener("click", closeEasterEgg);
-  easterEgg.addEventListener("click", (e) => {
-    if (e.target === easterEgg) closeEasterEgg();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeEasterEgg();
-  });
+  function showHelloWorld() {
+    taskflowView.classList.add("hidden");
+    helloView.classList.remove("hidden");
+    startParticles();
+  }
 })();
 
 // ─── Particle Canvas (Easter Egg) ─────────────────────────────────────────────
@@ -265,18 +262,18 @@ let particles = [];
 
 function startParticles() {
   const canvas = document.getElementById("particle-canvas");
-  const ctx    = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d");
 
-  canvas.width  = window.innerWidth;
+  canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
   particles = Array.from({ length: 80 }, () => ({
-    x:    Math.random() * canvas.width,
-    y:    Math.random() * canvas.height,
-    r:    Math.random() * 3 + 1,
-    dx:   (Math.random() - 0.5) * 1.2,
-    dy:   (Math.random() - 0.5) * 1.2,
-    hue:  Math.random() * 60 + 250,  // purples
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 3 + 1,
+    dx: (Math.random() - 0.5) * 1.2,
+    dy: (Math.random() - 0.5) * 1.2,
+    hue: Math.random() * 60 + 250,  // purples
     alpha: Math.random() * 0.6 + 0.2,
   }));
 
@@ -289,8 +286,8 @@ function startParticles() {
       ctx.fill();
       p.x += p.dx;
       p.y += p.dy;
-      if (p.x < 0 || p.x > canvas.width)  p.dx *= -1;
-      if (p.y < 0 || p.y > canvas.height)  p.dy *= -1;
+      if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
     });
     animFrame = requestAnimationFrame(draw);
   }
@@ -307,7 +304,16 @@ function stopParticles() {
 taskForm.addEventListener("submit", addTask);
 clearDoneBtn.addEventListener("click", clearDone);
 
+// Click hello-badge → switch to TaskFlow
+document.querySelector(".hello-badge").addEventListener("click", () => {
+  helloView.classList.add("hidden");
+  taskflowView.classList.remove("hidden");
+  stopParticles();
+  loadTasks();
+});
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
-loadTasks();
+loadTasks();        // pre-fetch tasks in background
 checkHealth();
 setInterval(checkHealth, 30000); // health check every 30s
+startParticles();   // Hello World is the default view

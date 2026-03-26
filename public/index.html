@@ -1,56 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="A production-grade Task Manager API built with Node.js, deployed on AWS EC2 with Nginx and CI/CD."
-    />
-    <title>TaskFlow — Task Manager</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <!-- ── Header ─────────────────────────────────────────────────── -->
-    <header class="header">
-      <div class="header-inner">
-        <div class="logo">
-          <span class="logo-icon"></span>
-          <span class="logo-text">TaskFlow</span>
-        </div>
-        <div class="header-meta">
-          <span id="task-count-badge" class="badge">0 tasks</span>
-          <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
-            <span class="toggle-icon" id="theme-icon">🌙</span>
-            <span id="theme-label">Dark</span>
-          </button>
-          <span class="health-dot" id="health-dot" title="Server Health"></span>
-        </div>
-      </div>
-    </header>
 
-    <!-- ── Main ──────────────────────────────────────────────────── -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="A production-grade Task Manager API built with Node.js, deployed on AWS EC2 with Nginx and CI/CD." />
+  <title>TaskFlow — Task Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- ── Header ─────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon"></span>
+        <span class="logo-text">TaskFlow</span>
+      </div>
+      <div class="header-meta">
+        <span id="task-count-badge" class="badge">0 tasks</span>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
+          <span class="toggle-icon" id="theme-icon">🌙</span>
+          <span id="theme-label">Dark</span>
+        </button>
+        <span class="health-dot" id="health-dot" title="Server Health"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Hello World View (default) ──────────────────────────────── -->
+  <div id="hello-view" class="easter-egg" role="main">
+    <div class="easter-egg-content">
+      <!-- Particle canvas -->
+      <canvas id="particle-canvas" class="particle-canvas"></canvas>
+
+      <div class="easter-egg-body">
+        <div class="hello-badge"></div>
+        <h2 class="hello-title">Hello, World!</h2>
+        <p class="hello-subtitle">
+          Built with <span class="highlight">Node.js</span> ·
+          <span class="highlight">Express</span> ·
+          <span class="highlight">AWS EC2</span>
+        </p>
+        <!--<p class="hello-hint">Type <kbd>task</kbd> to open TaskFlow 🚀</p>-->
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TaskFlow View (hidden by default) ─────────────────────────── -->
+  <div id="taskflow-view" class="hidden">
     <main class="main">
       <!-- Add Task Form -->
       <section class="add-task-section">
         <h1 class="section-title">What needs to be done?</h1>
         <form id="task-form" class="task-form">
           <div class="form-row">
-            <input
-              type="text"
-              id="task-input"
-              class="task-input"
-              placeholder="e.g. Deploy Node.js app to AWS EC2…"
-              maxlength="120"
-              autocomplete="off"
-              required
-            />
+            <input type="text" id="task-input" class="task-input" placeholder="e.g. Deploy Node.js app to AWS EC2…"
+              maxlength="120" autocomplete="off" required />
             <select id="priority-select" class="priority-select">
               <option value="low">🟢 Low</option>
               <option value="medium" selected>🟡 Medium</option>
@@ -84,30 +94,14 @@
         </div>
       </section>
     </main>
+  </div>
 
-    <!-- ── Toast ─────────────────────────────────────────────────── -->
-    <div id="toast" class="toast hidden"></div>
+  <!-- ── Toast ─────────────────────────────────────────────────── -->
+  <div id="toast" class="toast hidden"></div>
 
-    <!-- ── Easter Egg Overlay ─────────────────────────────────────── -->
-    <div id="easter-egg" class="easter-egg hidden" role="dialog" aria-modal="true">
-      <div class="easter-egg-content">
-        <!-- Particle canvas -->
-        <canvas id="particle-canvas" class="particle-canvas"></canvas>
 
-        <div class="easter-egg-body">
-          <div class="hello-badge"></div>
-          <h2 class="hello-title">Hello, World!</h2>
-          <p class="hello-subtitle">
-            Built with <span class="highlight">Node.js</span> ·
-            <span class="highlight">Express</span> ·
-            <span class="highlight">AWS EC2</span>
-          </p>
-          <p class="hello-hint">You found the secret! You typed <kbd>hello</kbd> 🎉</p>
-          <button class="btn btn-primary" id="close-easter-egg">Back to TaskFlow</button>
-        </div>
-      </div>
-    </div>
 
-    <script src="app.js"></script>
-  </body>
+  <script src="app.js"></script>
+</body>
+
 </html>

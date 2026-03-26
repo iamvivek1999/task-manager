@@ -394,7 +394,10 @@ body.dark {
   color: #fff;
   margin-bottom: 1.2rem;
   animation: pulse 2s infinite;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
+.hello-badge:hover { transform: scale(1.08); }
 @keyframes pulse {
   0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
   50%       { box-shadow: 0 0 0 12px transparent; }

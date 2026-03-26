@@ -41,26 +41,32 @@ CI/CD: GitHub push → GitHub Actions → SSH → git pull → PM2 restart
 | REST API | CRUD for tasks (`GET`, `POST`, `PUT`, `DELETE`) |
 | Health Check | `GET /health` — used by AWS Load Balancer |
 | File Persistence | Tasks saved to `tasks.json` (survives restarts) |
-| Premium UI | Dark-mode glassmorphism dashboard |
+| Premium UI | Glassmorphism dashboard, light/dark theme toggle |
 | Priority Levels | 🔴 High · 🟡 Medium · 🟢 Low |
 | Filter Tabs | All / Pending / Done |
-| 🥚 Easter Egg | Type `hello` anywhere on the page |
+| 🌍 Default Landing | **Hello World** page with animated particle canvas |
+| 🥚 Easter Egg — TaskFlow | Type `task` anywhere (or click the badge) to open the Task Manager |
+| 🥚 Easter Egg — Hello | Type `hello` anywhere to return to the Hello World screen |
 | Load Balancing | AWS ALB across 2 EC2 instances |
 | SSL | Let's Encrypt via Certbot |
 | CI/CD | GitHub Actions — deploys on every `git push` |
 
 ---
 
-## 🥚 Easter Egg
+## 🥚 Hidden Navigation (Easter Eggs)
 
-> Type `h → e → l → l → o` anywhere on the page (not inside an input box).
+The app **opens on the Hello World screen** by default — a full-screen animated particle canvas.
 
-A full-screen animated **Hello World** overlay appears with:
-- Floating particle canvas animation
-- Node.js Hello World code snippet
-- "Hello, World!" in large gradient text
+### Toggle to TaskFlow (Task Manager)
 
-Press **Escape** or click **Back to TaskFlow** to close.
+> Type `t → a → s → k` anywhere on the page *(not inside an input box)*,
+> **or click the glowing badge** on the Hello World screen.
+
+### Return to Hello World
+
+> Type `h → e → l → l → o` anywhere on the page *(not inside an input box)*.
+
+Both sequences must be typed within **2 seconds** of each other. The buffer resets on inactivity.
 
 ---
 
@@ -149,8 +155,8 @@ npm start        # plain node
 ### Step 1 — Launch EC2 Instances
 
 1. AWS Console → EC2 → **Launch Instance**
-2. **AMI:** Ubuntu Server 22.04 LTS
-3. **Instance type:** t2.micro (free tier)
+2. **AMI:**Amazon Linux Server 22.04 LTS
+3. **Instance type:** t3.micro (free tier)
 4. **Security Group:** allow SSH (22), HTTP (80), HTTPS (443), port 3000
 5. Download `.pem` key pair
 6. Repeat for **EC2 Instance 2**
@@ -262,7 +268,7 @@ task-manager/
 ├── public/
 │   ├── index.html          # Dashboard UI
 │   ├── styles.css          # Dark-mode premium CSS
-│   └── app.js              # Frontend JS + Easter Egg 🥚
+│   └── app.js              # Frontend JS + Easter Eggs 🥚 (type 'task'/'hello', click badge)
 └── .github/
     └── workflows/
         └── deploy.yml      # GitHub Actions CI/CD
