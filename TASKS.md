@@ -21,12 +21,19 @@
   - Config at `/etc/nginx/sites-available/task-manager` on both instances
   - App accessible via `http://<EC2_IP>` and via ALB on port 80
 
-- **E.** CI/CD pipeline using GitHub Actions
-  - `.github/workflows/deploy.yml` created
-  - Triggers on every `git push` to `main`
+- **E.** Create a CI/CD pipeline for the app using tools of your choice
+  - `.github/workflows/deploy.yml` created using GitHub Actions
   - SSH deploys to both EC2s: `git pull` → `npm install` → `pm2 restart`
-  - Health check after deploy
-  - ⚠️ Needs GitHub Secrets added: `EC2_HOST_1`, `EC2_HOST_2`, `EC2_SSH_KEY`
+  - Health check after deploy confirms app is live
+
+- **F.** Build and deploy the code on push
+  - Pipeline is configured with `on: push` to the `main` branch
+  - Successfully triggered automatically on the last push ✅ (run #5, 33s)
+
+- **G.** Changes should be visible on the URL
+  - Code pushed to `main` is immediately deployed via GitHub Actions
+  - Changes are instantly visible on the ALB DNS endpoint (`taskflow-alb-xxxx.ap-south-1.elb.amazonaws.com`)
+  - Will also be visible at `vivek.signiance.com` once the professor maps the domain
 
 ---
 
