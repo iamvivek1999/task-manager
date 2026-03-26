@@ -35,6 +35,11 @@
   - Changes are instantly visible on the ALB DNS endpoint (`taskflow-alb-xxxx.ap-south-1.elb.amazonaws.com`)
   - Will also be visible at `vivek.signiance.com` once the professor maps the domain
 
+- **H.** Document the assignment and share learning
+  - Created `LEARNINGS.md` detailing the cloud architecture and load balancing setup
+  - Documented key takeaways regarding Nginx, PM2, ALB, and CI/CD
+
+
 ---
 
 ## ⏳ Pending
