@@ -67,5 +67,5 @@ jobs:
       - name: ✅ Health Check
         run: |
           sleep 5
-          curl -f https://yourname.signiance.com/health || exit 1
+          curl -f http://${{ secrets.EC2_HOST_1 }}/health || exit 1
           echo "Deployment successful! App is live."
