@@ -1,16 +1,24 @@
-# 🔐 SSL / HTTPS Setup with DuckDNS + Certbot
+# 🔐 SSL / HTTPS Setup — DuckDNS + Certbot
 
-Domain: **`vivekapp.duckdns.org`**  
-EC2 IPs: `hello-1` → `3.110.147.76` | `hello-2` → `13.201.94.125`
+**Domain:** `vivekapp.duckdns.org`  
+**Servers:** `hello-1` → `3.110.147.76` | `hello-2` → `13.201.94.125`
+
+> ⚠️ **Order matters.** DNS must resolve first → then deploy nginx → then run Certbot.
 
 ---
 
-## Step 0 — Point DuckDNS to your ALB or EC2
+## Step 0 — Register DuckDNS Domain (do this first, in browser)
 
-1. Go to [https://www.duckdns.org](https://www.duckdns.org) and log in.
-2. Find the subdomain `vivekapp` and update its **Current IP** to:
-   - Your **EC2 hello-1 public IP**: `3.110.147.76`  
-   *(Certbot must be run per-server. Later you can point it to the ALB if you attach an ACM cert there.)*
+1. Go to 👉 [https://www.duckdns.org](https://www.duckdns.org) and log in
+2. Add subdomain `vivekapp` (or update existing)
+3. Set IP to **`3.110.147.76`** (hello-1's public IP)
+4. Click **"update ip"**
+
+Verify DNS resolves (run locally or on server):
+```bash
+nslookup vivekapp.duckdns.org
+# Must return: 3.110.147.76
+```
 
 ---
 
@@ -22,92 +30,79 @@ ssh -i "D:\TY\CC SEM6\SCE\helloworld.pem" ubuntu@3.110.147.76
 
 ---
 
-## Step 2 — Deploy the new `nginx.conf` to `hello-1`
-
-Copy the updated config from this repo to the server:
+## Step 2 — Deploy updated nginx config
 
 ```bash
-# Run from your LOCAL machine (Git Bash / WSL / PowerShell with SCP)
-scp -i "D:\TY\CC SEM6\SCE\helloworld.pem" nginx.conf ubuntu@3.110.147.76:/tmp/nginx-task-manager.conf
-
-# Then on the server:
-sudo cp /tmp/nginx-task-manager.conf /etc/nginx/sites-available/task-manager
-sudo nginx -t   # Verify config syntax
+cd ~/task-manager
+git pull
+sudo cp nginx.conf /etc/nginx/sites-available/task-manager
+sudo nginx -t && sudo systemctl reload nginx
 ```
+
+✅ Expected: `nginx: configuration file /etc/nginx/nginx.conf test is successful`
 
 ---
 
-## Step 3 — Install Certbot on `hello-1`
-
-```bash
-sudo apt update
-sudo apt install -y certbot python3-certbot-nginx
-```
-
----
-
-## Step 4 — Run Certbot on `hello-1`
-
-> ⚠️ DuckDNS must point to this server's IP **before** running this.
+## Step 3 — Run Certbot
 
 ```bash
 sudo certbot --nginx -d vivekapp.duckdns.org
 ```
 
-Answer the prompts:
+Answer prompts:
 - **Email:** your email
 - **Terms of Service:** `Y`
 - **EFF mailing list:** `N`
 
-Certbot will auto-configure Nginx and write the SSL cert to:
-- `/etc/letsencrypt/live/vivekapp.duckdns.org/fullchain.pem`
-- `/etc/letsencrypt/live/vivekapp.duckdns.org/privkey.pem`
+Certbot will:
+1. Verify domain ownership via HTTP challenge
+2. Issue the Let's Encrypt certificate
+3. **Automatically update your nginx config** to add HTTPS + redirect
+
+✅ Expected: `Successfully deployed certificate for vivekapp.duckdns.org`
 
 ---
 
-## Step 5 — Reload Nginx on `hello-1`
+## Step 4 — Verify
 
 ```bash
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-✅ Visit **[https://vivekapp.duckdns.org](https://vivekapp.duckdns.org)** — you should see the green padlock 🔒
+Visit 👉 **[https://vivekapp.duckdns.org](https://vivekapp.duckdns.org)** — should show green padlock 🔒
 
 ---
 
-## Step 6 — Repeat everything on `hello-2`
+## Step 5 — Repeat on `hello-2`
 
 ```bash
-# 1. Point DuckDNS to hello-2's IP: 13.201.94.125 (temporarily)
-# 2. SSH in:
+# 1. In browser: change DuckDNS IP to 13.201.94.125, click Update IP
+# 2. Wait ~1 min, verify: nslookup vivekapp.duckdns.org → 13.201.94.125
+
+# 3. SSH into hello-2:
 ssh -i "D:\TY\CC SEM6\SCE\helloworld.pem" ubuntu@13.201.94.125
 
-# 3. SCP config:
-scp -i "D:\TY\CC SEM6\SCE\helloworld.pem" nginx.conf ubuntu@13.201.94.125:/tmp/nginx-task-manager.conf
-
 # 4. On hello-2:
-sudo cp /tmp/nginx-task-manager.conf /etc/nginx/sites-available/task-manager
-sudo apt update && sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d vivekapp.duckdns.org
+cd ~/task-manager
+git pull
+sudo cp nginx.conf /etc/nginx/sites-available/task-manager
 sudo nginx -t && sudo systemctl reload nginx
+sudo certbot --nginx -d vivekapp.duckdns.org
 ```
 
 ---
 
-## Step 7 — Set DuckDNS back to `hello-1` (or ALB)
+## Step 6 — Point DuckDNS back to `hello-1`
 
-After both certs are issued, point DuckDNS back to `hello-1`'s IP.  
-(ALB doesn't support Certbot directly — for ALB HTTPS you need ACM, which requires a registered domain.)
+After both certs are issued, set DuckDNS IP back to **`3.110.147.76`**.
 
 ---
 
-## Auto-Renewal
-
-Certbot creates a systemd timer that auto-renews certs. Verify it:
+## Auto-Renewal Check
 
 ```bash
-sudo systemctl status certbot.timer
 sudo certbot renew --dry-run
+sudo systemctl status certbot.timer
 ```
 
 ---
@@ -116,8 +111,8 @@ sudo certbot renew --dry-run
 
 | Step | Action |
 |------|--------|
-| 0 | Point DuckDNS `vivekapp` → EC2 IP |
-| 1–5 | Install certbot + get cert on `hello-1` |
-| 6 | Repeat on `hello-2` (point DuckDNS there temporarily) |
-| 7 | Point DuckDNS back to `hello-1` |
-| Done | `https://vivekapp.duckdns.org` is live 🔒 |
+| 0 | Register DuckDNS `vivekapp` → `3.110.147.76` |
+| 1–4 | Deploy HTTP nginx config → run Certbot on `hello-1` |
+| 5 | Switch DuckDNS to `hello-2` IP → repeat |
+| 6 | Switch DuckDNS back to `hello-1` |
+| ✅ | `https://vivekapp.duckdns.org` live with green padlock |
