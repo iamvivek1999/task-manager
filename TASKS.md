@@ -39,12 +39,9 @@
   - Created `LEARNINGS.md` detailing the cloud architecture and load balancing setup
   - Documented key takeaways regarding Nginx, PM2, ALB, and CI/CD
 
-
----
-
-## ⏳ Pending
-
-- **B/D.** SSL / HTTPS + Domain setup
-  - Share ALB DNS with professor during review → he maps `vivek.signiance.com`
-  - Then run on both EC2s: `sudo certbot --nginx -d vivek.signiance.com`
-  - `nginx.conf` already has SSL config ready for `vivek.signiance.com`
+- **B/D.** SSL / HTTPS + Domain setup ✅
+  - Free domain `vivekapp.duckdns.org` via DuckDNS → pointed to EC2 IPs
+  - `nginx.conf` updated: HTTP→HTTPS redirect + full SSL server block with Certbot cert paths
+  - Run on each EC2: `sudo certbot --nginx -d vivekapp.duckdns.org`
+  - Auto-renewal via `certbot.timer` systemd service
+  - Full steps documented in `DUCKDNS_SSL_STEPS.md`
